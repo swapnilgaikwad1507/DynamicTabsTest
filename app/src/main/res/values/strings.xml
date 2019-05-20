@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">TabLayoutTutorial</string>
+    <string name="navigation_drawer_open">Open</string>
+    <string name="navigation_drawer_close">Close</string>
+
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+
+    <string name="default_page">Default page</string>
+    <string name="add_page">Add page</string>
+    <string name="fragment_data">FragmentData</string>
+    <string name="my_data">MyData</string>
+    <string name="page_already_exist_warning">Page name already exist.</string>
+    <string name="choose_some_other_name">Choose some other name</string>
+</resources>
