@@ -1,4 +1,4 @@
-package vidyoconnector.vidyo.com.tablayouttutorial;
+package vidyoconnector.vidyo.com.tablayouttutorial.adapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

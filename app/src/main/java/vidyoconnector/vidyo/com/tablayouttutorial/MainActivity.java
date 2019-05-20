@@ -1,8 +1,6 @@
 package vidyoconnector.vidyo.com.tablayouttutorial;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
@@ -31,7 +29,8 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import vidyoconnector.vidyo.com.tablayouttutorial.pojo.NavMenuClass;
+import vidyoconnector.vidyo.com.tablayouttutorial.adapters.PlansPagerAdapter;
+import vidyoconnector.vidyo.com.tablayouttutorial.adapters.TabAdapter;
 import vidyoconnector.vidyo.com.tablayouttutorial.utils.MySharedPreferences;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
