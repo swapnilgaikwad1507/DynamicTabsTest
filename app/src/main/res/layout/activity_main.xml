@@ -5,15 +5,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.v7.widget.Toolbar
+    <include
         android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        android:minHeight="?attr/actionBarSize"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark"
-        app:titleTextColor="@android:color/white" />
+        layout="@layout/tool_bar" />
 
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/drawerLayout"

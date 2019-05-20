@@ -20,15 +20,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import vidyoconnector.vidyo.com.tablayouttutorial.pojo.NavMenuClass;
+import vidyoconnector.vidyo.com.tablayouttutorial.utils.MySharedPreferences;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     @BindView(R.id.view_pager)
     public ViewPager viewPager;
@@ -42,11 +48,19 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.toolbar)
     public Toolbar toolbar;
 
-    public SharedPreferences mPrefs;
+    @Inject
+    MySharedPreferences mySharedPreferences;
+
     Activity mActivity;
+    int mCurrentTabPosition = 0;
+    String mExisitingFragments = "";
+    String[] arrayCompleteData;
 
     @BindView(R.id.nav_view)
     public NavigationView nav_view;
+
+    @BindView(R.id.imgDeleteCurrentTab)
+    public ImageView imgDeleteCurrentTab;
 
     //test commit
 
@@ -57,32 +71,37 @@ public class MainActivity extends AppCompatActivity {
 
         InitViews();
 
-        if (mPrefs.getString(getString(R.string.fragment_data), "").equalsIgnoreCase("")) {
-            SharedPreferences.Editor mEdito = mPrefs.edit();
-            mEdito.putString(getString(R.string.fragment_data), getString(R.string.default_page));
-            mEdito.commit();
+        if (mySharedPreferences.getStringData(getString(R.string.fragment_data), "").equalsIgnoreCase("")) {
+            mySharedPreferences.putStringData(getString(R.string.fragment_data), getString(R.string.default_page));
         }
 
-        String mCompleteData = mPrefs.getString(getString(R.string.fragment_data), "");
-        String[] arrayData = mCompleteData.split(",");
+        mExisitingFragments = mySharedPreferences.getStringData(getString(R.string.fragment_data), "");
+        arrayCompleteData = mExisitingFragments.split(",");
 
-        HandlingNavigationView(arrayData);
+        HandlingNavigationView(arrayCompleteData);
 
-        AddPageToTabLayouts(arrayData);
+        AddPageToTabLayouts(arrayCompleteData);
     }
 
     private void InitViews() {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-        mPrefs = getSharedPreferences(getString(R.string.my_data), MODE_PRIVATE);
+//        getSupportActionBar().setIcon(R.drawable.football);
         mActivity = MainActivity.this;
+        ((MyApplication) getApplicationContext()).getMyComponent().inject(this);
     }
 
     private void HandlingNavigationView(String[] arrayData) {
 
-        Menu drawerMenu = nav_view.getMenu();
-        ArrayList items = new ArrayList();
-        NavMenuClass navMenuObject = new NavMenuClass(drawerMenu, items);
+        Menu menu = nav_view.getMenu();
+        MenuItem item;
+        menu.clear();
+
+//        for (int i = 0; i < arrayData.length; i++) {
+//        }
+//        Menu drawerMenu = nav_view.getMenu();
+//        ArrayList items = new ArrayList();
+//        NavMenuClass navMenuObject = new NavMenuClass(menu, items);
 
         NavigationView.OnNavigationItemSelectedListener item_click_listener = new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -93,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
                 if (name.equalsIgnoreCase(getString(R.string.add_page))) {
                     OpenPopUp();
                 } else {
-                    String mCompleteData = mPrefs.getString(getString(R.string.fragment_data), "");
+                    String mCompleteData = mySharedPreferences.getStringData(getString(R.string.fragment_data), "");
                     String[] arrayData = mCompleteData.split(",");
                     int tabToSelect = 0;
                     for (int i = 0; i < arrayData.length; i++) {
@@ -117,14 +136,13 @@ public class MainActivity extends AppCompatActivity {
         drawer.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
-        Menu menu = navMenuObject.getMenu();
+        /*Menu menu = navMenuObject.getMenu();
         MenuItem item;
 
         for (int i = 0; i < arrayData.length; i++) {
             menu.removeItem(i);
-        }
+        }*/
 
-        boolean IsAddPageAvailable = false;
         int uniqueIdForAddPage = arrayData.length;
         for (int temp = 0; temp <= arrayData.length - 1; temp++) {
 
@@ -135,9 +153,6 @@ public class MainActivity extends AppCompatActivity {
                 item = menu.add(temp, temp, temp, arrayData[temp]);
             }
 
-            /*if (arrayData[temp].equalsIgnoreCase(getString(R.string.add_page))) {
-                IsAddPageAvailable = true;
-            }*/
         }
 
         item = menu.add(uniqueIdForAddPage, uniqueIdForAddPage, uniqueIdForAddPage, getString(R.string.add_page));
@@ -149,7 +164,14 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
+                mCurrentTabPosition = tab.getPosition();
+                viewPager.setCurrentItem(mCurrentTabPosition);
+
+                if (mCurrentTabPosition == 0) {
+                    imgDeleteCurrentTab.setVisibility(View.INVISIBLE);
+                } else {
+                    imgDeleteCurrentTab.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -197,9 +219,9 @@ public class MainActivity extends AppCompatActivity {
         buttonAddPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences.Editor mEdito = mPrefs.edit();
+//                SharedPreferences.Editor mEdito = mPrefs.edit();
 
-                String mExisitingFragments = mPrefs.getString(getString(R.string.fragment_data), "");
+                mExisitingFragments = mySharedPreferences.getStringData(getString(R.string.fragment_data), "");
                 String[] arrayData = mExisitingFragments.split(",");
                 boolean IsSameNameAvailable = false;
 
@@ -212,13 +234,12 @@ public class MainActivity extends AppCompatActivity {
                 if (IsSameNameAvailable) {
                     Toast.makeText(MainActivity.this, getString(R.string.page_already_exist_warning), Toast.LENGTH_SHORT).show();
                 } else {
-                    if(edtAddPage.getText().toString().trim().equalsIgnoreCase(getString(R.string.add_page))){
+                    if (edtAddPage.getText().toString().trim().equalsIgnoreCase(getString(R.string.add_page))) {
                         Toast.makeText(MainActivity.this, getString(R.string.choose_some_other_name), Toast.LENGTH_SHORT).show();
-                    }else{
+                    } else {
                         String mCompleteData = mExisitingFragments + "," + edtAddPage.getText().toString().trim();
 
-                        mEdito.putString(getString(R.string.fragment_data), mCompleteData);
-                        mEdito.commit();
+                        mySharedPreferences.putStringData(getString(R.string.fragment_data), mCompleteData);
 
                         String[] arrayCompleteData = mCompleteData.split(",");
                         HandlingNavigationView(arrayCompleteData);
@@ -234,6 +255,33 @@ public class MainActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
+    private void RemoveTabAndNavigationMenu() {
+        mExisitingFragments = mySharedPreferences.getStringData(getString(R.string.fragment_data), "");
+        arrayCompleteData = mExisitingFragments.split(",");
+        ArrayList<String> arrData = new ArrayList<String>();
+        arrData.addAll(Arrays.asList(arrayCompleteData));
+
+        arrData.remove(mCurrentTabPosition);
+
+        String mUpdatedFragments = "";
+        for (int i = 0; i < arrData.size(); i++) {
+            if (mUpdatedFragments.equalsIgnoreCase("")) {
+                mUpdatedFragments = arrData.get(i);
+            } else {
+                mUpdatedFragments = mUpdatedFragments + "," + arrData.get(i);
+            }
+        }
+        mySharedPreferences.putStringData(getString(R.string.fragment_data), mUpdatedFragments);
+
+
+        mExisitingFragments = mySharedPreferences.getStringData(getString(R.string.fragment_data), "");
+        arrayCompleteData = mExisitingFragments.split(",");
+
+        HandlingNavigationView(arrayCompleteData);
+
+        AddPageToTabLayouts(arrayCompleteData);
+    }
+
     @Override
     public void onBackPressed() {
         assert drawer != null;
@@ -241,6 +289,16 @@ public class MainActivity extends AppCompatActivity {
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
+        }
+    }
+
+    @OnClick({R.id.imgDeleteCurrentTab})
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.imgDeleteCurrentTab:{
+                RemoveTabAndNavigationMenu();
+            }
+            break;
         }
     }
 }
