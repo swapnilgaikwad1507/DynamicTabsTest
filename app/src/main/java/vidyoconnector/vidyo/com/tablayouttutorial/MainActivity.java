@@ -48,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.nav_view)
     public NavigationView nav_view;
 
+    //test commit
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
