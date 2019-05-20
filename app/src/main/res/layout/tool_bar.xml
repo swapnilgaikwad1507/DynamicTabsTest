@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorPrimary"
+    app:tabTextAppearance="@android:style/TextAppearance.Widget.TabWidget"
     android:theme="@style/ThemeOverlay.AppCompat.Dark"
     android:elevation="4dp">
 

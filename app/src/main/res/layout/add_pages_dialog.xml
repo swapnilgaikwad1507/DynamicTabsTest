@@ -27,7 +27,7 @@
             android:id="@+id/edtAddPage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Add page"
+            android:hint="Enter page name"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
